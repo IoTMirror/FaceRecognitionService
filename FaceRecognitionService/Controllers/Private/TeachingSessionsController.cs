@@ -2,6 +2,7 @@
 using FaceRecognitionService.Models;
 using FaceRecognitionService.Logic.SessionManager.Postgres;
 using FaceRecognitionService.Logic.SessionManager;
+using FaceRecognitionService.Logic;
 
 namespace FaceRecognitionService.Controllers.Private
 {
@@ -12,6 +13,8 @@ namespace FaceRecognitionService.Controllers.Private
         [Route("{sessionID:guid}", Name ="TeachingSession")]
         public IHttpActionResult Get(string sessionID)
         {
+            var authorizationResult = (new BasicServerAuthorizationMethod()).authorizeServer(this);
+            if (authorizationResult != null) return authorizationResult;
             ITeachingSessionManager sessionsManager = new TeachingSessionManager();
             TeachingSession session = sessionsManager.getSession(sessionID);
             if (session == null) return NotFound();
@@ -22,6 +25,8 @@ namespace FaceRecognitionService.Controllers.Private
         [Route("{userID:int}")]
         public IHttpActionResult Post(int userID)
         {
+            var authorizationResult = (new BasicServerAuthorizationMethod()).authorizeServer(this);
+            if (authorizationResult != null) return authorizationResult;
             ITeachingSessionManager sessionsManager = new TeachingSessionManager();
             var teachingSession = sessionsManager.createSession();
             teachingSession.userID = userID;
@@ -32,6 +37,8 @@ namespace FaceRecognitionService.Controllers.Private
         [Route("{sessionID:guid}")]
         public IHttpActionResult Delete(string sessionID)
         {
+            var authorizationResult = (new BasicServerAuthorizationMethod()).authorizeServer(this);
+            if (authorizationResult != null) return authorizationResult;
             ITeachingSessionManager sessionsManager = new TeachingSessionManager();
             if (sessionsManager.removeSession(sessionID) > 0) return Ok();
             else return NotFound();

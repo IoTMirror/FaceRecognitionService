@@ -2,6 +2,7 @@
 using FaceRecognitionService.Models;
 using FaceRecognitionService.Logic.SessionManager.Postgres;
 using FaceRecognitionService.Logic.SessionManager;
+using FaceRecognitionService.Logic;
 
 namespace FaceRecognitionService.Controllers.Private
 {
@@ -12,6 +13,8 @@ namespace FaceRecognitionService.Controllers.Private
         //returns session state and recognized user, if it is the last step removes session
         public IHttpActionResult Get(string sessionID)
         {
+            var authorizationResult = (new BasicServerAuthorizationMethod()).authorizeServer(this);
+            if (authorizationResult != null) return authorizationResult;
             IRecognitionSessionManager sessionsManager = new RecognitionSessionManager();
             RecognitionSession session = sessionsManager.getSession(sessionID);
             if (session == null)
@@ -32,6 +35,8 @@ namespace FaceRecognitionService.Controllers.Private
         // creates recognition session for mirror
         public IHttpActionResult Post(int mirrorID)
         {
+            var authorizationResult = (new BasicServerAuthorizationMethod()).authorizeServer(this);
+            if (authorizationResult != null) return authorizationResult;
             IRecognitionSessionManager sessionsManager = new RecognitionSessionManager();
             var recognitionSession = sessionsManager.createSession();
             recognitionSession.mirrorID = mirrorID;
@@ -43,6 +48,8 @@ namespace FaceRecognitionService.Controllers.Private
         // removes session
         public IHttpActionResult Delete(string sessionID)
         {
+            var authorizationResult = (new BasicServerAuthorizationMethod()).authorizeServer(this);
+            if (authorizationResult != null) return authorizationResult;
             IRecognitionSessionManager sessionsManager = new RecognitionSessionManager();
             if (sessionsManager.removeSession(sessionID) > 0) return Ok();
             else return NotFound();
