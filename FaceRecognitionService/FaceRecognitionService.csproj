@@ -127,6 +127,7 @@
     <Compile Include="Controllers\Private\RecognitionSessionsController.cs" />
     <Compile Include="Controllers\Private\PrivRecognizerController.cs" />
     <Compile Include="Controllers\Private\TeachingSessionsController.cs" />
+    <Compile Include="Controllers\Private\UsersController.cs" />
     <Compile Include="Controllers\Public\RecognizerController.cs" />
     <Compile Include="Controllers\Public\TeacherController.cs" />
     <Compile Include="Global.asax.cs">
@@ -143,6 +144,8 @@
     <Compile Include="Logic\SessionManager\Simple\RecognitionSessionManager.cs" />
     <Compile Include="Logic\SessionManager\Simple\TeachingSessionManager.cs" />
     <Compile Include="Logic\SessionManager\ITeachingSessionManager.cs" />
+    <Compile Include="Logic\UsersManager\IUserMirrorsManager.cs" />
+    <Compile Include="Logic\UsersManager\Postgres\UserMirrorsManager.cs" />
     <Compile Include="Models\RecognitionSession.cs" />
     <Compile Include="Models\TeachingSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
