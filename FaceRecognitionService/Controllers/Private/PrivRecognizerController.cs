@@ -14,7 +14,7 @@ namespace FaceRecognitionService.Controllers.Private
         {
             var facesDataDir = WebConfigurationManager.AppSettings["facesDataDirectoryName"];
             LBPHUserFaceRecognizer recognizer = new LBPHUserFaceRecognizer(HttpContext.Current.Server.MapPath("~/App_Data/" + facesDataDir));
-            recognizer.removeUserData(userID);
+            recognizer.RemoveUserData(userID);
             return Ok();
         }
     }

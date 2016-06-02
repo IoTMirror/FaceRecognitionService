@@ -30,6 +30,7 @@ namespace FaceRecognitionService.Controllers.Public
             var thresholdProp = WebConfigurationManager.AppSettings["threshold"];
             var minWidthProp = WebConfigurationManager.AppSettings["minWidth"];
             var minHeightProp = WebConfigurationManager.AppSettings["minHeight"];
+            var compressionProp = WebConfigurationManager.AppSettings["compression"];
             var cascadeFile = WebConfigurationManager.AppSettings["cascadeFileName"];
             var facesDataDir = WebConfigurationManager.AppSettings["facesDataDirectoryName"];
             int imageWidth;
@@ -47,13 +48,13 @@ namespace FaceRecognitionService.Controllers.Public
 
             CascadeClassifier cc = new CascadeClassifier(HttpContext.Current.Server.MapPath("~/App_Data/" + cascadeFile));
             CascadeDetector detector = new CascadeDetector(cc);
-            detector.minSize = imageSize;
+            detector.MinSize = imageSize;
             Mat face = detector.ExtractLargest(image);
 
 
             FaceImagePreprocessor imageProcessor = new FaceImagePreprocessor();
             imageProcessor.OutputImageSize = imageSize;
-            face = imageProcessor.process(face);
+            face = imageProcessor.Process(face);
 
             if (face == null) return BadRequest("Invalid file type");
 
@@ -61,9 +62,14 @@ namespace FaceRecognitionService.Controllers.Public
             int threshold;
             if (int.TryParse(thresholdProp, out threshold))
             {
-                recognizer.threshold = threshold;
+                recognizer.Threshold = threshold;
             }
-            session.recognizedUser=recognizer.recognize(face);
+            bool compression;
+            if (bool.TryParse(compressionProp, out compression))
+            {
+                recognizer.Compression = compression;
+            }
+            session.recognizedUser=recognizer.Recognize(face);
             
 
             session.state = RecognitionSession.RecognitionState.POST_RECOGNITION;
