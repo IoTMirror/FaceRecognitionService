@@ -73,10 +73,13 @@ namespace FaceRecognitionService.Logic.SessionManager.Postgres
             string user = WebConfigurationManager.AppSettings["DB_USER"] ?? "";
             string pass = WebConfigurationManager.AppSettings["DB_PASS"] ?? "";
             string port = WebConfigurationManager.AppSettings["DB_PORT"] ?? "";
-            var connectionString = string.Format("Server={0};Database={1};User Id={2};Password={3};Port={4}",
+            bool ssl = false;
+            bool.TryParse(WebConfigurationManager.AppSettings["DB_SSL"] ?? "", out ssl);
+            var connectionString = string.Format("Server={0};Database={1};User Id={2};Password={3};Port={4}" + (ssl?";SSL Mode=Require; Use SSL Stream=true":""),
             host, db, user, pass, port);
-            Console.WriteLine(connectionString);
-            return new NpgsqlConnection(connectionString);
+            var con = new NpgsqlConnection(connectionString);
+            if (ssl) con.UserCertificateValidationCallback = delegate { return true; };
+            return con;
         }
     }
 }
