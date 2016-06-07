@@ -7,14 +7,13 @@ namespace FaceRecognitionService.Logic.SessionManager.Postgres
 {
     public class RecognitionSessionManager : IRecognitionSessionManager
     {
-        public RecognitionSession createSession()
+        public RecognitionSession createSession(RecognitionSession session)
         {
             var connection = createConnection();
             connection.Open();
-            RecognitionSession session = new RecognitionSession();
-            session.mirrorID = -1;
             int rows;
             session.sessionID = Guid.NewGuid().ToString();
+            removeSessionByMirrorID(session.mirrorID);
             NpgsqlCommand command = new NpgsqlCommand(string.Format("INSERT INTO RecognitionSessions (session_id,mirror_id,state,recognized_user) VALUES ('{0}','{1}','{2}','{3}');",
             session.sessionID, session.mirrorID,(int)session.state,session.recognizedUser), connection);
             rows = command.ExecuteNonQuery();
@@ -50,6 +49,17 @@ namespace FaceRecognitionService.Logic.SessionManager.Postgres
             connection.Open();
             NpgsqlCommand command = new NpgsqlCommand(string.Format("DELETE FROM RecognitionSessions WHERE session_id='{0}';",
             sessionID), connection);
+            int rows = command.ExecuteNonQuery();
+            connection.Close();
+            return rows;
+        }
+
+        public int removeSessionByMirrorID(int mirrorID)
+        {
+            var connection = createConnection();
+            connection.Open();
+            NpgsqlCommand command = new NpgsqlCommand(string.Format("DELETE FROM RecognitionSessions WHERE mirror_id='{0}';",
+            mirrorID), connection);
             int rows = command.ExecuteNonQuery();
             connection.Close();
             return rows;

@@ -48,7 +48,7 @@ namespace FaceRecognitionService.Logic.UsersManager.Postgres
             connection.Close();
         }
 
-        public int[] getUsersMirrors(int userID)
+        public List<int> getUsersMirrors(int userID)
         {
             var connection = createConnection();
             connection.Open();
@@ -61,7 +61,23 @@ namespace FaceRecognitionService.Logic.UsersManager.Postgres
                 mirrors.Add(int.Parse(reader["mirror_id"].ToString()));
             }
             connection.Close();
-            return mirrors.ToArray();
+            return mirrors;
+        }
+
+        public List<int> getMirrorsUsers(int mirrorID)
+        {
+            var connection = createConnection();
+            connection.Open();
+            NpgsqlCommand command = new NpgsqlCommand(string.Format("SELECT user_id FROM UsersMirrors WHERE mirror_id='{0}';",
+            mirrorID), connection);
+            List<int> users = new List<int>();
+            var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                users.Add(int.Parse(reader["user_id"].ToString()));
+            }
+            connection.Close();
+            return users;
         }
 
         public NpgsqlConnection createConnection()

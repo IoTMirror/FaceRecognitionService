@@ -21,16 +21,17 @@ namespace FaceRecognitionService.Controllers.Private
             else return Ok(session);
         }
 
-        // creates teaching session for user
-        [Route("{userID:int}")]
-        public IHttpActionResult Post(int userID)
+        // creates teaching session for mirror and user
+        [Route("mirrors/{mirrorID:int}/users/{userID:int}")]
+        public IHttpActionResult Post(int mirrorID, int userID)
         {
             var authorizationResult = (new BasicServerAuthorizationMethod()).authorizeServer(this);
             if (authorizationResult != null) return authorizationResult;
             ITeachingSessionManager sessionsManager = new TeachingSessionManager();
-            var teachingSession = sessionsManager.createSession();
+            var teachingSession = new TeachingSession();
             teachingSession.userID = userID;
-            sessionsManager.saveSession(teachingSession);
+            teachingSession.mirrorID = mirrorID;
+            teachingSession = sessionsManager.createSession(teachingSession);
             return Created(Url.Route("TeachingSession", new { sessionID = teachingSession.sessionID }), teachingSession);
         }
 
@@ -40,8 +41,8 @@ namespace FaceRecognitionService.Controllers.Private
             var authorizationResult = (new BasicServerAuthorizationMethod()).authorizeServer(this);
             if (authorizationResult != null) return authorizationResult;
             ITeachingSessionManager sessionsManager = new TeachingSessionManager();
-            if (sessionsManager.removeSession(sessionID) > 0) return Ok();
-            else return NotFound();
+            sessionsManager.removeSession(sessionID);
+            return Ok();
         }
     }
 }

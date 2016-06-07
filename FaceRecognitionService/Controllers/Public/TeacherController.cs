@@ -74,5 +74,13 @@ namespace FaceRecognitionService.Controllers.Public
             return Ok();
         }
 
+        [Route("mirrors/{mirrorID:int}")]
+        public IHttpActionResult Get(int mirrorID)
+        {
+            ITeachingSessionManager sessionsManager = new TeachingSessionManager();
+            TeachingSession session = sessionsManager.getSessionByMirrorID(mirrorID);
+            if (session == null) return NotFound();
+            else return Ok(session.sessionID);
+        }
     }
 }

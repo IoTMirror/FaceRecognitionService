@@ -3,6 +3,8 @@ using Emgu.CV.CvEnum;
 using FaceRecognitionService.Logic;
 using FaceRecognitionService.Logic.SessionManager;
 using FaceRecognitionService.Logic.SessionManager.Postgres;
+using FaceRecognitionService.Logic.UsersManager;
+using FaceRecognitionService.Logic.UsersManager.Postgres;
 using FaceRecognitionService.Models;
 using FRLib;
 using System.Drawing;
@@ -69,8 +71,8 @@ namespace FaceRecognitionService.Controllers.Public
             {
                 recognizer.Compression = compression;
             }
-            session.recognizedUser=recognizer.Recognize(face);
-            
+            IUserMirrorsManager um = new UserMirrorsManager();
+            session.recognizedUser=recognizer.Recognize(face, um.getMirrorsUsers(session.mirrorID));
 
             session.state = RecognitionSession.RecognitionState.POST_RECOGNITION;
             sessionsManager.saveSession(session);

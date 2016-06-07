@@ -38,7 +38,9 @@ namespace FaceRecognitionService.Controllers.Private
             var authorizationResult = (new BasicServerAuthorizationMethod()).authorizeServer(this);
             if (authorizationResult != null) return authorizationResult;
             IRecognitionSessionManager sessionsManager = new RecognitionSessionManager();
-            var recognitionSession = sessionsManager.createSession();
+            var recognitionSession = new RecognitionSession();
+            recognitionSession.mirrorID = mirrorID;
+            recognitionSession = sessionsManager.createSession(recognitionSession);
             recognitionSession.mirrorID = mirrorID;
             sessionsManager.saveSession(recognitionSession);
             return Created(Url.Route("RecognitionSession",new { sessionID = recognitionSession.sessionID}), recognitionSession);

@@ -8,28 +8,26 @@ namespace FaceRecognitionService.Logic.SessionManager.Postgres
     public class TeachingSessionManager : ITeachingSessionManager
     {
 
-        public TeachingSession createSession()
+        public TeachingSession createSession(TeachingSession session)
         {
             var connection = createConnection();
             connection.Open();
-            TeachingSession session = new TeachingSession();
-            session.userID = -1;
             int rows;
             session.sessionID = Guid.NewGuid().ToString();
-            NpgsqlCommand command = new NpgsqlCommand(string.Format("INSERT INTO TeachingSessions (session_id,user_id) VALUES ('{0}','{1}');",
-            session.sessionID, session.userID), connection);
+            removeSessionByMirrorID(session.mirrorID);
+            NpgsqlCommand command = new NpgsqlCommand(string.Format("INSERT INTO TeachingSessions (session_id,mirror_id,user_id) VALUES ('{0}','{1}','{2}');",
+            session.sessionID, session.mirrorID, session.userID), connection);
             rows = command.ExecuteNonQuery();
             connection.Close();
             if (rows == 0) return null;
             return session;
-          
         }
 
         public TeachingSession getSession(string sessionID)
         {
             var connection = createConnection();
             connection.Open();
-            NpgsqlCommand command = new NpgsqlCommand(string.Format("SELECT session_id,user_id FROM TeachingSessions WHERE session_id='{0}';",
+            NpgsqlCommand command = new NpgsqlCommand(string.Format("SELECT session_id,mirror_id, user_id FROM TeachingSessions WHERE session_id='{0}';",
             sessionID), connection);
             TeachingSession session=null;
             var reader = command.ExecuteReader();
@@ -37,6 +35,26 @@ namespace FaceRecognitionService.Logic.SessionManager.Postgres
             {
                 session = new TeachingSession();
                 session.sessionID = reader["session_id"].ToString();
+                session.mirrorID = int.Parse(reader["mirror_id"].ToString());
+                session.userID = int.Parse(reader["user_id"].ToString());
+            }
+            connection.Close();
+            return session;
+        }
+
+        public TeachingSession getSessionByMirrorID(int mirrorID)
+        {
+            var connection = createConnection();
+            connection.Open();
+            NpgsqlCommand command = new NpgsqlCommand(string.Format("SELECT session_id,mirror_id, user_id FROM TeachingSessions WHERE mirror_id='{0}';",
+            mirrorID), connection);
+            TeachingSession session = null;
+            var reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                session = new TeachingSession();
+                session.sessionID = reader["session_id"].ToString();
+                session.mirrorID = int.Parse(reader["mirror_id"].ToString());
                 session.userID = int.Parse(reader["user_id"].ToString());
             }
             connection.Close();
@@ -54,12 +72,23 @@ namespace FaceRecognitionService.Logic.SessionManager.Postgres
             return rows;
         }
 
+        public int removeSessionByMirrorID(int mirrorID)
+        {
+            var connection = createConnection();
+            connection.Open();
+            NpgsqlCommand command = new NpgsqlCommand(string.Format("DELETE FROM TeachingSessions WHERE mirror_id='{0}';",
+            mirrorID), connection);
+            int rows = command.ExecuteNonQuery();
+            connection.Close();
+            return rows;
+        }
+
         public bool saveSession(TeachingSession session)
         {
             var connection = createConnection();
             connection.Open();
-            NpgsqlCommand command = new NpgsqlCommand(string.Format("UPDATE TeachingSessions SET session_id='{0}', user_id='{1}' WHERE session_id='{0}';",
-            session.sessionID, session.userID), connection);
+            NpgsqlCommand command = new NpgsqlCommand(string.Format("UPDATE TeachingSessions SET session_id='{0}', mirror_id='{1}', user_id='{2}' WHERE session_id='{0}';",
+            session.sessionID, session.mirrorID, session.userID), connection);
             int rows = command.ExecuteNonQuery();
             connection.Close();
             if (rows != 0) return true;

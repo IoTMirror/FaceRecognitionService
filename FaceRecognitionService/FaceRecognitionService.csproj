@@ -141,8 +141,6 @@
     <Compile Include="Logic\SessionManager\IRecognitionSessionManager.cs" />
     <Compile Include="Logic\SessionManager\ISessionManager.cs" />
     <Compile Include="Logic\MatExtractor.cs" />
-    <Compile Include="Logic\SessionManager\Simple\RecognitionSessionManager.cs" />
-    <Compile Include="Logic\SessionManager\Simple\TeachingSessionManager.cs" />
     <Compile Include="Logic\SessionManager\ITeachingSessionManager.cs" />
     <Compile Include="Logic\UsersManager\IUserMirrorsManager.cs" />
     <Compile Include="Logic\UsersManager\Postgres\UserMirrorsManager.cs" />
