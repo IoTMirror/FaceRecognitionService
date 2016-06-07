@@ -53,8 +53,8 @@ namespace FaceRecognitionService.Controllers.Private
             var authorizationResult = (new BasicServerAuthorizationMethod()).authorizeServer(this);
             if (authorizationResult != null) return authorizationResult;
             IRecognitionSessionManager sessionsManager = new RecognitionSessionManager();
-            if (sessionsManager.removeSession(sessionID) > 0) return Ok();
-            else return NotFound();
+            sessionsManager.removeSession(sessionID);
+            return Ok();
         }
     }
 }
